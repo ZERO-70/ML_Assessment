@@ -1,0 +1,9 @@
+# Keep the provided assessment data byte-for-byte as delivered.
+data/*.csv -text
+*.pdf binary
+*.png binary
+
+# Normalise everything we author ourselves.
+*.py text eol=lf
+*.md text eol=lf
+*.txt text eol=lf
