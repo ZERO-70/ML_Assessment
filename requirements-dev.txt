@@ -1,0 +1,8 @@
+# Tooling for running the notebooks. The runtime dependencies needed to
+# reproduce the predictions and run score.py live in requirements.txt.
+-r requirements.txt
+
+jupyter>=1.1,<2
+nbconvert>=7.16,<8
+nbformat>=5.10,<6
+ipykernel>=6.29,<7
