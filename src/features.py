@@ -64,7 +64,7 @@ FEATURE_COLUMNS = [
 def haversine_miles(
     lat1: pd.Series, lon1: pd.Series, lat2: pd.Series, lon2: pd.Series
 ) -> pd.Series:
-    """Great-circle distance in miles."""
+    """circle distance in miles."""
     lat1_r, lon1_r, lat2_r, lon2_r = (np.radians(v) for v in (lat1, lon1, lat2, lon2))
     a = (
         np.sin((lat2_r - lat1_r) / 2) ** 2
