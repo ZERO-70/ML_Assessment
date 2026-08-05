@@ -14,3 +14,7 @@ env/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Node (report build)
+node_modules/
+package-lock.json
