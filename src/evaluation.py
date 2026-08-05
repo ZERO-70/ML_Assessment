@@ -176,3 +176,40 @@ def cross_validate(
     mean_row = frame_out.drop(columns=["fold"]).mean()
     mean_row["fold"] = "mean"
     return pd.concat([frame_out, mean_row.to_frame().T], ignore_index=True)
+
+
+def out_of_fold_predictions(
+    frame: pd.DataFrame,
+    fit_predict,
+    folds: list[Fold] | None = None,
+    target: str = "posted_rate",
+) -> pd.DataFrame:
+    """Collect every fold's test-set predictions into one frame.
+
+    An average metric says how large the error is; it does not say *where*. This
+    returns the individual predictions alongside their original rows, so error
+    can be broken down by distance, equipment, date or any other column.
+
+    Every prediction here comes from a model that never saw that row while
+    fitting -- the same guarantee `cross_validate` relies on. Note the folds do
+    not cover the first six months, which are training-only in every fold, so
+    this is a subset of `frame` rather than all of it.
+    """
+    folds = folds or rolling_origin_folds(frame["date"])
+
+    parts = []
+    for fold in folds:
+        train_mask, test_mask = fold.masks(frame["date"])
+        test_frame = frame[test_mask]
+        predicted = np.asarray(fit_predict(frame[train_mask], test_frame), dtype=float)
+
+        part = test_frame.copy()
+        part["fold"] = fold.index
+        part["predicted"] = predicted
+        part["error"] = predicted - test_frame[target].to_numpy()
+        part["absolute_percentage_error"] = (
+            part["error"].abs() / test_frame[target].to_numpy()
+        )
+        parts.append(part)
+
+    return pd.concat(parts)
